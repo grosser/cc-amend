@@ -48,6 +48,10 @@ task :default do
   end
 end
 
+# end-to-end test:
+# - run generate reports with opposite of current report
+# - run rake
+# - check https://codeclimate.com/github/grosser/cc-amend/CoverMe to see that opposite is now reported (80<->100%)
 task :generate_report do
   tmpdir = "#{Dir.tmpdir}/codeclimate-test-coverage-*"
   `rm -rf #{tmpdir}`
