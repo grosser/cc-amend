@@ -56,7 +56,9 @@ task :generate_report do
     ENV["CODECLIMATE_REPO_TOKEN"] = "63c0e1b7dad4058225454f297914889b2ea19974983df707e3272ffa821ca7f5" # token for cc-amend
     require "codeclimate-test-reporter"
     CodeClimate::TestReporter.start
-    require './app'
+    SimpleCov.command_name("Fooo")
+    require './lib/cover_me'
+    CoverMe.new.foo
   end
   Process.wait(child)
   report = Dir.glob(tmpdir).first
