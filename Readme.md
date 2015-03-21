@@ -35,9 +35,10 @@ Unify them before sending:
 gem "codeclimate-test-reporter", git: "https://github.com/grosser/ruby-test-reporter.git", ref: "grosser/merge2"
 
 # app
+require 'json'
 files = Dir.glob("#{Dir.tmpdir}/codeclimate-test-coverage-*")
-file, content = CodeClimate::TestReporter::Client.new.send(:unify_simplecov, files)
-File.write("report.json", content)
+content = CodeClimate::TestReporter::Client.new.send(:unify_simplecov, files)
+File.write("report.json", JSON.dump(content))
 ```
 
 and then send as shown above
