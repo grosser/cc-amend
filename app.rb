@@ -60,11 +60,10 @@ post "/amend/:key" do
       print "Sending #{count} reports to #{client.host} ..."
 
       files = Dir.glob("#{dir}/*")
-      file, results = client.send(:unify_simplecov, files)
-      results = JSON.load(results)
+      token = File.read(files.first)[/"repo_token":"([^"]+)"/, 1] || raise("Token not found")
 
-      with_token results.fetch("repo_token") do
-        client.post_results(results)
+      with_token token do
+        client.batch_post_results(files)
       end
       "sent #{count} reports"
     end

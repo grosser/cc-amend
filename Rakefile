@@ -59,6 +59,7 @@ task :generate_report do
     SimpleCov.command_name("Fooo")
     require './lib/cover_me'
     CoverMe.new.foo
+    # CoverMe.new.bar # toggle to trigger different coverage result and see that it actually works
   end
   Process.wait(child)
   report = Dir.glob(tmpdir).first
