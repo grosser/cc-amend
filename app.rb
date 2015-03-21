@@ -58,10 +58,13 @@ post "/amend/:key" do
 
       client = CodeClimate::TestReporter::Client.new
       print "Sending #{count} reports to #{client.host} ..."
+
       files = Dir.glob("#{dir}/*")
-      token = File.read(files.first)[/"repo_token":"(\S+?)"/, 1] || raise("No token found in report")
-      with_token token do
-        client.batch_post_results(files)
+      file, results = client.send(:unify_simplecov, files)
+      results = JSON.load(results)
+
+      with_token results.fetch("repo_token") do
+        client.post_results(results)
       end
       "sent #{count} reports"
     end
