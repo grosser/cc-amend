@@ -36,7 +36,6 @@ end
 post "/amend/:key" do
   key = params.fetch("key")
   count = params.fetch("count").to_i
-  token = params.fetch("token")
   data = request.body.read
   index = nil
 
@@ -59,8 +58,10 @@ post "/amend/:key" do
 
       client = CodeClimate::TestReporter::Client.new
       print "Sending #{count} reports to #{client.host} ..."
+      files = Dir.glob("#{dir}/*")
+      token = File.read(files.first)[/"repo_token":"(\S+?)"/, 1] || raise("No token found in report")
       with_token token do
-        client.batch_post_results(Dir.glob("#{dir}/*"))
+        client.batch_post_results(files)
       end
       "sent #{count} reports"
     end

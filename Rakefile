@@ -33,12 +33,33 @@ task :default do
     result = `curl --silent '127.0.0.1:3000'`
     raise "Server version failed: #{result}" unless result.include?("Welcome to cc-amend")
 
+    # test combining reports
     3.times do |i|
-      result = `curl --silent -X POST '127.0.0.1:3000/amend/#{key}?count=4&token=TOKEN' --data "#{i}#{i}#{i}"`
+      result = `curl --silent -X POST '127.0.0.1:3000/amend/#{key}?count=4' --data-binary @test/report.json`
       index = 3 - i
       raise "Server amend #{i} failed: #{result}" unless result.include?("waiting for #{index} more reports on #{key}")
     end
+
+    # trigger report sending
+    result = `curl --silent -X POST '127.0.0.1:3000/amend/#{key}?count=4' --data-binary @test/report.json`
+    raise "Send failed: #{result}" unless result.include?("sent 4 reports")
   ensure
     (child_pids(pid) + [pid]).each { |pid| Process.kill(:TERM, pid) }
   end
+end
+
+task :generate_report do
+  tmpdir = "#{Dir.tmpdir}/codeclimate-test-coverage-*"
+  `rm -rf #{tmpdir}`
+  child = fork do
+    ENV["TO_FILE"] = "1"
+    ENV["CODECLIMATE_REPO_TOKEN"] = "63c0e1b7dad4058225454f297914889b2ea19974983df707e3272ffa821ca7f5" # token for cc-amend
+    require "codeclimate-test-reporter"
+    CodeClimate::TestReporter.start
+    require './app'
+  end
+  Process.wait(child)
+  report = Dir.glob(tmpdir).first
+  `mv #{report} test/report.json`
+  `rm -rf coverage`
 end

@@ -1,7 +1,7 @@
 Unify reports from all your tests runs and send them as one.
 
 ```
-curl -X POST --data-binary @report.json https://cc-amend.herokuapp.com/amend/some_random_key?count=4&token=YOUR_CODE_CLIMATE_TOKEN
+curl -X POST --data-binary @report.json https://cc-amend.herokuapp.com/amend/some_random_key?count=4
 # => waiting for 3 more reports on some_random_key
 # => waiting for 2 more reports on some_random_key
 # => waiting for 1 more reports on some_random_key
