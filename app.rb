@@ -5,6 +5,14 @@ require 'codeclimate-test-reporter'
 %w[SERVERS USERNAME PASSWORD].each { |k| ENV["MEMCACHE_#{k}"] ||= ENV["MEMCACHIER_#{k}"] }
 STORE = Dalli::Client.new(nil, compress: true)
 
+# otherwise blows up trying to parse the post body as form on heroku since big json blob looks like deeply nested form
+# alternatively set `-H "Content-Type:application/json"`
+Rack::Request.class_eval do
+  def POST
+    {}
+  end
+end
+
 def lock(key)
   lock = "#{key}.lock"
   sleep 0.01 until STORE.add(lock, '1', 10) # get the lock
@@ -36,6 +44,7 @@ end
 post "/amend/:key" do
   key = params.fetch("key")
   count = params.fetch("count").to_i
+
   data = request.body.read
   index = nil
 
