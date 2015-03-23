@@ -37,7 +37,7 @@ task :default do
     3.times do |i|
       result = `curl --silent -X POST '127.0.0.1:3000/amend/#{key}?count=4' --data-binary @test/report.json`
       index = 3 - i
-      raise "Server amend #{i} failed: #{result}" unless result.include?("waiting for #{index} more reports on #{key}")
+      raise "Server amend #{i} failed: #{result}" unless result.include?("waiting for #{index}/4 reports on #{key}")
     end
 
     # trigger report sending

@@ -42,8 +42,8 @@ get "/" do
 end
 
 post "/amend/:key" do
-  key = params.fetch("key")
-  count = params.fetch("count").to_i
+  key = params["key"] || halt(400, "Need key")
+  count = (params["count"] || halt(400, "Need count parameter")).to_i
 
   data = request.body.read
   index = nil
@@ -51,7 +51,7 @@ post "/amend/:key" do
   # store the data
   lock key do
     index = incr(key)
-    raise "Too many parts" if index > count
+    halt 400, "Too many parts for #{key}" if index > count
     STORE.set("#{key}.#{index}", data)
   end
 
@@ -69,15 +69,15 @@ post "/amend/:key" do
       print "Sending #{count} reports to #{client.host} ..."
 
       files = Dir.glob("#{dir}/*")
-      token = File.read(files.first)[/"repo_token":"([^"]+)"/, 1] || raise("Token not found")
+      token = File.read(files.first)[/"repo_token":"([^"]+)"/, 1] || halt(400, "repo_token not found in json")
 
       with_token token do
         client.batch_post_results(files)
       end
-      "sent #{count} reports"
+      "sent #{count} reports for #{key}"
     end
   else
-    "waiting for #{missing} more reports on #{key}"
+    "waiting for #{missing}/#{count} reports on #{key}"
   end
 
   puts message
