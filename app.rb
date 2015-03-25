@@ -62,6 +62,7 @@ post "/amend/:key" do
       count.times do |i|
         partial_key = "#{key}.#{i+1}"
         data = STORE.get(partial_key) || raise("Looks like #{partial_key} is expired :(")
+        STORE.delete(partial_key)
         File.write("#{dir}/report-#{i}.json", data)
       end
 
