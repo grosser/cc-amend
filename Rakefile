@@ -33,6 +33,10 @@ task :default do
     result = `curl --silent '127.0.0.1:3000'`
     raise "Server version failed: #{result}" unless result.include?("Welcome to cc-amend")
 
+    # test invalid json
+    result = `curl --silent -X POST '127.0.0.1:3000/amend/#{key}?count=4' --data-binary 'oops'`
+    raise "Invalid json failed: #{result}" unless result.include?("Invalid JSON")
+
     # test combining reports
     3.times do |i|
       result = `curl --silent -X POST '127.0.0.1:3000/amend/#{key}?count=4' --data-binary @test/report.json`

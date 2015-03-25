@@ -46,6 +46,7 @@ post "/amend/:key" do
   count = (params["count"] || halt(400, "Need count parameter")).to_i
 
   data = request.body.read
+  halt 400, "Invalid JSON submitted, must start with {" unless data.start_with?("{")
   index = nil
 
   # store the data
