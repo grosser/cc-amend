@@ -18,7 +18,7 @@ def child_pids(pid)
   end.compact
 end
 
-def generate_report(method)
+def generate_report(name)
   tmpdir = "#{Dir.tmpdir}/codeclimate-test-coverage-*"
   `rm -rf #{tmpdir}`
   child = fork do
@@ -28,12 +28,12 @@ def generate_report(method)
     CodeClimate::TestReporter.start
     SimpleCov.command_name("Fooo")
     require './lib/cover_me'
-    CoverMe.new.send(method)
-    # CoverMe.new.baz # toggle to trigger different coverage result and see that it actually works
+    require './lib/cover_me2'
+    yield
   end
   Process.wait(child)
   report = Dir.glob(tmpdir).first
-  `mv #{report} test/report_#{method}.json`
+  `mv #{report} test/report_#{name}.json`
 end
 
 task :server do
@@ -57,13 +57,13 @@ task :default do
 
     # test combining reports
     3.times do |i|
-      result = `curl --silent -X POST '127.0.0.1:3000/amend/#{key}?count=4' --data-binary @test/report_foo.json`
+      result = `curl --silent -X POST '127.0.0.1:3000/amend/#{key}?count=4' --data-binary @test/report_a.json`
       index = 3 - i
       raise "Server amend #{i} failed: #{result}" unless result.include?("waiting for #{index}/4 reports on #{key}")
     end
 
     # trigger report sending
-    result = `curl --silent -X POST '127.0.0.1:3000/amend/#{key}?count=4' --data-binary @test/report_bar.json`
+    result = `curl --silent -X POST '127.0.0.1:3000/amend/#{key}?count=4' --data-binary @test/report_b.json`
     raise "Send failed: #{result}" unless result.include?("sent 4 reports")
   ensure
     (child_pids(pid) + [pid]).each { |pid| Process.kill(:TERM, pid) }
@@ -71,11 +71,17 @@ task :default do
 end
 
 # end-to-end test:
-# - run generate reports with opposite of current report
+# - run generate reports with baz commented in/out to check for changes
 # - run rake
 # - check https://codeclimate.com/github/grosser/cc-amend/CoverMe to see that opposite is now reported (80<->100%)
 task :generate_report do
-  generate_report(:foo)
-  generate_report(:bar)
+  generate_report 'a' do
+    CoverMe.new.foo
+    # CoverMe.new.baz # toggle here
+  end
+  generate_report 'b' do
+    CoverMe.new.bar
+    CoverMe2.new.foo
+  end
   `rm -rf coverage`
 end
