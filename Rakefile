@@ -18,6 +18,24 @@ def child_pids(pid)
   end.compact
 end
 
+def generate_report(method)
+  tmpdir = "#{Dir.tmpdir}/codeclimate-test-coverage-*"
+  `rm -rf #{tmpdir}`
+  child = fork do
+    ENV["TO_FILE"] = "1"
+    ENV["CODECLIMATE_REPO_TOKEN"] = "63c0e1b7dad4058225454f297914889b2ea19974983df707e3272ffa821ca7f5" # token for cc-amend
+    require "codeclimate-test-reporter"
+    CodeClimate::TestReporter.start
+    SimpleCov.command_name("Fooo")
+    require './lib/cover_me'
+    CoverMe.new.send(method)
+    # CoverMe.new.baz # toggle to trigger different coverage result and see that it actually works
+  end
+  Process.wait(child)
+  report = Dir.glob(tmpdir).first
+  `mv #{report} test/report_#{method}.json`
+end
+
 task :server do
   server
 end
@@ -39,13 +57,13 @@ task :default do
 
     # test combining reports
     3.times do |i|
-      result = `curl --silent -X POST '127.0.0.1:3000/amend/#{key}?count=4' --data-binary @test/report.json`
+      result = `curl --silent -X POST '127.0.0.1:3000/amend/#{key}?count=4' --data-binary @test/report_foo.json`
       index = 3 - i
       raise "Server amend #{i} failed: #{result}" unless result.include?("waiting for #{index}/4 reports on #{key}")
     end
 
     # trigger report sending
-    result = `curl --silent -X POST '127.0.0.1:3000/amend/#{key}?count=4' --data-binary @test/report.json`
+    result = `curl --silent -X POST '127.0.0.1:3000/amend/#{key}?count=4' --data-binary @test/report_bar.json`
     raise "Send failed: #{result}" unless result.include?("sent 4 reports")
   ensure
     (child_pids(pid) + [pid]).each { |pid| Process.kill(:TERM, pid) }
@@ -57,20 +75,7 @@ end
 # - run rake
 # - check https://codeclimate.com/github/grosser/cc-amend/CoverMe to see that opposite is now reported (80<->100%)
 task :generate_report do
-  tmpdir = "#{Dir.tmpdir}/codeclimate-test-coverage-*"
-  `rm -rf #{tmpdir}`
-  child = fork do
-    ENV["TO_FILE"] = "1"
-    ENV["CODECLIMATE_REPO_TOKEN"] = "63c0e1b7dad4058225454f297914889b2ea19974983df707e3272ffa821ca7f5" # token for cc-amend
-    require "codeclimate-test-reporter"
-    CodeClimate::TestReporter.start
-    SimpleCov.command_name("Fooo")
-    require './lib/cover_me'
-    CoverMe.new.foo
-    # CoverMe.new.bar # toggle to trigger different coverage result and see that it actually works
-  end
-  Process.wait(child)
-  report = Dir.glob(tmpdir).first
-  `mv #{report} test/report.json`
+  generate_report(:foo)
+  generate_report(:bar)
   `rm -rf coverage`
 end

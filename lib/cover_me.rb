@@ -1,9 +1,13 @@
 class CoverMe
   def foo
-    "bar"
+    "foo"
   end
 
   def bar
-    "foo"
+    "bar"
+  end
+
+  def baz
+    "baz"
   end
 end
