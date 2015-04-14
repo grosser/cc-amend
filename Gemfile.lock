@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/grosser/ruby-test-reporter.git
-  revision: 3a7c928e5943ad6f19a2ec73144003faa98f37c1
+  revision: cb6a6624efbed9dda8cd14b902c071c14949d416
   ref: grosser/merge2
   specs:
     codeclimate-test-reporter (0.4.7)
