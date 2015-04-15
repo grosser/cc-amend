@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'dalli'
 require 'codeclimate-test-reporter'
+require 'codeclimate_batch'
 
 %w[SERVERS USERNAME PASSWORD].each { |k| ENV["MEMCACHE_#{k}"] ||= ENV["MEMCACHIER_#{k}"] }
 STORE = Dalli::Client.new(nil, compress: true)
@@ -74,7 +75,8 @@ post "/amend/:key" do
       token = File.read(files.first)[/"repo_token":"([^"]+)"/, 1] || halt(400, "repo_token not found in json")
 
       with_token token do
-        client.batch_post_results(files)
+        result = CodeclimateBatch.unify(files)
+        client.post_results(result)
       end
       "sent #{count} reports for #{key}"
     end

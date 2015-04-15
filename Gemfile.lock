@@ -1,18 +1,15 @@
-GIT
-  remote: https://github.com/grosser/ruby-test-reporter.git
-  revision: cb6a6624efbed9dda8cd14b902c071c14949d416
-  ref: grosser/merge2
-  specs:
-    codeclimate-test-reporter (0.4.7)
-      simplecov (>= 0.7.1, < 1.0.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
+    codeclimate-test-reporter (0.4.7)
+      simplecov (>= 0.7.1, < 1.0.0)
+    codeclimate_batch (0.1.2)
+      json
     daemons (1.2.2)
     dalli (2.7.4)
     docile (1.1.5)
     eventmachine (1.0.7)
+    json (1.8.2)
     multi_json (1.11.0)
     rack (1.6.0)
     rack-protection (1.5.3)
@@ -39,7 +36,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  codeclimate-test-reporter!
+  codeclimate-test-reporter
+  codeclimate_batch
   dalli
   rake
   rollbar
