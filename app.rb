@@ -3,6 +3,9 @@ require 'dalli'
 require 'codeclimate-test-reporter'
 require 'codeclimate_batch'
 
+# heroku process dies after 30s, so might as wait as long as possible, also saw timeouts on big reports multiple times
+CodeClimate::TestReporter.configuration.timeout = 30
+
 %w[SERVERS USERNAME PASSWORD].each { |k| ENV["MEMCACHE_#{k}"] ||= ENV["MEMCACHIER_#{k}"] }
 STORE = Dalli::Client.new(nil, compress: true)
 
