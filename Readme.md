@@ -1,8 +1,13 @@
 Unify reports from all your tests runs and send them as one.
 
-### Generate reports
+## Automated setup
+
+Use [codeclimate batch](https://github.com/grosser/codeclimate_batch)
+
+## Manual usage
 
 ```Ruby
+# only do when running on master branch ... see codeclimate_batch for details
 ENV["TO_FILE"] = "1"
 ENV["CODECLIMATE_REPO_TOKEN"] = "XXXX"
 
@@ -14,7 +19,7 @@ CodeClimate::TestReporter.start
 
 file = Dir.glob("#{Dir.tmpdir}/codeclimate-test-coverage-*").first
 
-... see below
+... send report
 ```
 
 ### Send report
@@ -26,23 +31,6 @@ curl -X POST --data-binary @report.json https://cc-amend.herokuapp.com/amend/som
 # => waiting for 1 more reports on some_random_key
 # => sent 4 reports
 ```
-
-### Multiple reports
-Unify them before sending:
-
-```Ruby
-# Gemfile
-gem "codeclimate-test-reporter", git: "https://github.com/grosser/ruby-test-reporter.git", ref: "grosser/merge2"
-
-# app
-require 'json'
-files = Dir.glob("#{Dir.tmpdir}/codeclimate-test-coverage-*")
-content = CodeClimate::TestReporter::Client.new.send(:unify_simplecov, files)
-File.write("report.json", JSON.dump(content))
-```
-
-and then send as shown above
-
 
 Author
 ======
