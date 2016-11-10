@@ -1,12 +1,12 @@
 Unify reports from all your tests runs and send them as one.
 
-Run your own hosted batching [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
 ## Automated setup
 
 Use [codeclimate batch](https://github.com/grosser/codeclimate_batch)
 
 ## Manual usage
+
+Alternatively to using the hosted version from codeclimate_batch, you can host it yourself [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 ```Ruby
 # only do when running on master branch ... see codeclimate_batch for details

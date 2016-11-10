@@ -7,9 +7,7 @@
     "memcachier:dev"
   ],
   "env": {
-    "CUSTOM_RUBY_VERSION": "2.2.4",
     "CODECLIMATE_REPO_TOKEN": "XXXXXX",
-    "ROLLBAR": "Rollbar key",
-    "TO_FILE": "1"
+    "ROLLBAR": "Rollbar key"
   }
 }
