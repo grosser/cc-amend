@@ -1,3 +1,5 @@
+[DEPRECATED Use builtin](https://docs.codeclimate.com/docs/setting-up-test-coverage#section-parallel-tests-and-multiple-test-suites)
+
 Unify reports from all your tests runs and send them as one.
 
 ## Automated setup
