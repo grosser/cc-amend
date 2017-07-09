@@ -1,0 +1,13 @@
+{
+  "name": "cc-amend",
+  "description": "Compile batch results for codeclimate test coverage",
+  "repository": "https://github.com/grosser/cc-amend",
+  "keywords": ["codeclimate", "codeclimate_batch", "travis"],
+  "addons": [
+    "memcachier:dev"
+  ],
+  "env": {
+    "CODECLIMATE_REPO_TOKEN": "XXXXXX",
+    "ROLLBAR": "Rollbar key"
+  }
+}

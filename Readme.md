@@ -8,6 +8,8 @@ Use [codeclimate batch](https://github.com/grosser/codeclimate_batch)
 
 ## Manual usage
 
+Alternatively to using the hosted version from codeclimate_batch, you can host it yourself [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
 ```Ruby
 # only do when running on master branch ... see codeclimate_batch for details
 ENV["TO_FILE"] = "1"
@@ -32,6 +34,15 @@ curl -X POST --data-binary @report.json https://cc-amend.herokuapp.com/amend/som
 # => waiting for 2 more reports on some_random_key
 # => waiting for 1 more reports on some_random_key
 # => sent 4 reports
+```
+
+You can send reports from [Travis](https://travis-ci.org/) manually. This relies on the repository you're reporting from using `gem 'codeclimate-test-reporter', '~> 1.0.2'` &mdash; add this to your `.travis.yml` file:
+
+```
+after_script:
+  # Change the `count` parameter to match the number of test suites you're sending
+
+  - curl -X POST --data-binary @coverage/.resultset.json https://<<YOUR APP>>.herokuapp.com/amend/<<REPOSITORY NAME>>-$TRAVIS_BUILD_NUMBER?count=4
 ```
 
 Author
