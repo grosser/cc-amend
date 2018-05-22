@@ -36,10 +36,12 @@ def generate_report(name)
   `mv #{report} test/report_#{name}.json`
 end
 
+desc "Spin up test server"
 task :server do
   server
 end
 
+desc "Test"
 task :default do
   pid = fork { server ">/dev/null 2>&1" }
   begin
